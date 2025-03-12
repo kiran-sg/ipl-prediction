@@ -1,5 +1,32 @@
-FROM eclipse-temurin:17-jdk
+#FROM eclipse-temurin:17-jdk
+#WORKDIR /app
+#COPY target/ipl-prediction-0.0.1-SNAPSHOT.jar app.jar
+#EXPOSE 8080
+#CMD ["java", "-jar", "app.jar"]
+
+# Use Eclipse Temurin JDK 17
+FROM eclipse-temurin:17-jdk AS build
+
+# Set the working directory
 WORKDIR /app
-COPY target/ipl-prediction-0.0.1-SNAPSHOT.jar app.jar
+
+# Copy the Maven project files
+COPY . .
+
+# Build the application using Maven
+RUN ./mvnw clean package -DskipTests
+
+# Use a minimal JDK runtime for the final image
+FROM eclipse-temurin:17-jre AS runtime
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR from the previous stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the application port
 EXPOSE 8080
+
+# Run the application
 CMD ["java", "-jar", "app.jar"]
