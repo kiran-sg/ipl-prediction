@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://ipl-prediction-ui-production.up.railway.app")
+                        .allowedOrigins("https://ipl-prediction-ui-production.up.railway.app", "http://localhost:4200")
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };
