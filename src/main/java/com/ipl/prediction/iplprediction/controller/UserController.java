@@ -1,7 +1,7 @@
 package com.ipl.prediction.iplprediction.controller;
 
-import com.ipl.prediction.iplprediction.entity.User;
-import com.ipl.prediction.iplprediction.request.UserDto;
+import com.ipl.prediction.iplprediction.entity.IplUser;
+import com.ipl.prediction.iplprediction.dto.UserDto;
 import com.ipl.prediction.iplprediction.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +17,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<IplUser> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public IplUser createUser(@RequestBody IplUser iplUser) {
+        return userService.saveUser(iplUser);
     }
 
     @PostMapping(value = "/validate", consumes = "application/json")
