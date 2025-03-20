@@ -1,6 +1,5 @@
 package com.ipl.prediction.iplprediction.dto;
 
-import com.ipl.prediction.iplprediction.entity.IplUser;
 import lombok.Getter;
 import lombok.Setter;
 

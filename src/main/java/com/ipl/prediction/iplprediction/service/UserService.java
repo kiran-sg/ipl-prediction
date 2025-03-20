@@ -9,8 +9,6 @@ public interface UserService {
 
     List<IplUser> getAllUsers();
 
-    IplUser findByUserId(String userId);
-
     IplUser saveUser(IplUser iplUser);
 
     UserResponse validateUser(String userId);

@@ -1,6 +1,5 @@
 package com.ipl.prediction.iplprediction.controller;
 
-import com.ipl.prediction.iplprediction.model.IplMatch;
 import com.ipl.prediction.iplprediction.model.IplPlayer;
 import com.ipl.prediction.iplprediction.request.PlayerRequest;
 import com.ipl.prediction.iplprediction.service.CsvService;
