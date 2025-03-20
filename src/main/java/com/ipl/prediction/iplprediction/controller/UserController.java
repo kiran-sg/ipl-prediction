@@ -31,14 +31,14 @@ public class UserController {
     @PostMapping(value = "/validate", consumes = "application/json")
     public ResponseEntity<UserResponse> validatePwd(@RequestBody IplUserDto user, HttpSession httpSession) {
         UserResponse response = new UserResponse();
-        if (user.getUserId() == null || user.getPwd() == null) {
+        if (user.getUserId() == null) {
             response.setMessage("User id not provided");
             return ResponseEntity.badRequest().body(response); // Return false for bad request
         }
 
         response = userService.validateUser(user.getUserId());
         if(response.isValidUser()) {
-            httpSession.setAttribute("userId", response.getIplUserDto().getUserId());
+            httpSession.setAttribute("userId", response.getUser().getUserId());
             System.out.println("UserId set in session: " + httpSession.getAttribute("userId"));
         }
         return ResponseEntity.ok(response);

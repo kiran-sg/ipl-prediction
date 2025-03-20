@@ -17,6 +17,5 @@ public class IplUser {
     private String userId;
     private String name;
     private String location;
-    private String pwd;
 
 }

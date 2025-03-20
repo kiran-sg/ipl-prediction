@@ -9,5 +9,5 @@ import lombok.Setter;
 public class UserResponse {
     private String message;
     private boolean isValidUser;
-    private IplUserDto iplUserDto;
+    private IplUserDto user;
 }

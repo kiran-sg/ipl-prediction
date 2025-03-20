@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         boolean validUser = iplUser != null && iplUser.getUserId().equals(userId);
         response.setValidUser(validUser);
         if (validUser) {
-            response.setIplUserDto(iplUserToUserDto(iplUser));
+            response.setUser(iplUserToUserDto(iplUser));
         }
         return response;
     }

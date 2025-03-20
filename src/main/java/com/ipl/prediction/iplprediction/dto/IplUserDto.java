@@ -6,8 +6,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class IplUserDto {
+    private Long id;
     private String userId;
     private String name;
     private String location;
-    private String pwd;
 }
