@@ -3,11 +3,13 @@ package com.ipl.prediction.iplprediction.controller;
 import com.ipl.prediction.iplprediction.entity.IplUser;
 import com.ipl.prediction.iplprediction.dto.IplUserDto;
 import com.ipl.prediction.iplprediction.response.UserResponse;
+import com.ipl.prediction.iplprediction.service.ExcelService;
 import com.ipl.prediction.iplprediction.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private ExcelService excelService;
 
     @GetMapping
     public List<IplUser> getAllUsers() {
@@ -42,5 +46,12 @@ public class UserController {
             System.out.println("UserId set in session: " + httpSession.getAttribute("userId"));
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadExcelFile(@RequestParam("file") MultipartFile file) {
+        List<IplUserDto> employees = excelService.parseExcelFile(file);
+        userService.uploadData(employees);
+        return ResponseEntity.ok("File uploaded and data saved successfully!");
     }
 }

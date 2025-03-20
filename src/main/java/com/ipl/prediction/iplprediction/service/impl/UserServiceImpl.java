@@ -8,6 +8,7 @@ import com.ipl.prediction.iplprediction.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,6 +37,19 @@ public class UserServiceImpl implements UserService {
             response.setUser(iplUserToUserDto(iplUser));
         }
         return response;
+    }
+
+    @Override
+    public void uploadData(List<IplUserDto> dtos) {
+        List<IplUser> users = new ArrayList<>();
+        dtos.forEach(dto -> {
+            IplUser user = new IplUser();
+            user.setUserId(dto.getUserId());
+            user.setName(dto.getName());
+            user.setLocation(dto.getLocation());
+            users.add(user);
+        });
+        userRepository.saveAll(users);
     }
 
     private IplUserDto iplUserToUserDto(IplUser user) {
