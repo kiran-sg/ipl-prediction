@@ -7,8 +7,7 @@ import lombok.Setter;
 @Setter
 public class IplMatch {
     private String matchNo;
-    private String date;
-    private String time;
+    private String dateTime;
     private String home;
     private String away;
 }

@@ -14,6 +14,7 @@ public class PredictionDto {
     private String matchId;
     private String userId;
     private String tossPredicted;
+    private String firstInnScorePredicted;
     private String teamPredicted;
     private String momPredicted;
     private String mostRunsScorerPredicted;

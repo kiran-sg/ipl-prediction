@@ -1,7 +1,9 @@
 package com.ipl.prediction.iplprediction.service.impl;
 
+import com.ipl.prediction.iplprediction.dto.IplUserDto;
 import com.ipl.prediction.iplprediction.entity.IplUser;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
+import com.ipl.prediction.iplprediction.response.UserResponse;
 import com.ipl.prediction.iplprediction.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +32,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean validatePwd(String userId, String pwd) {
+    public UserResponse validateUser(String userId) {
+        UserResponse response = new UserResponse();
         IplUser iplUser = userRepository.findByUserId(userId);
-        return iplUser != null && iplUser.getPwd().equals(pwd);
+        boolean validUser = iplUser != null && iplUser.getUserId().equals(userId);
+        response.setValidUser(validUser);
+        if (validUser) {
+            response.setIplUserDto(iplUserToUserDto(iplUser));
+        }
+        return response;
+    }
+
+    private IplUserDto iplUserToUserDto(IplUser user) {
+        IplUserDto iplUserDto = new IplUserDto();
+        iplUserDto.setUserId(user.getUserId());
+        iplUserDto.setName(user.getName());
+        iplUserDto.setLocation(user.getLocation());
+        return iplUserDto;
     }
 }

@@ -8,5 +8,6 @@ import lombok.Setter;
 public class IplPlayer {
     private String playerNo;
     private String playerName;
+    private String category;
     private String team;
 }

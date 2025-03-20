@@ -25,7 +25,10 @@ public class Prediction {
     private IplUser user; // Many-to-one relationship with IplUser
 
     @Column(name = "toss_predicted", nullable = false)
-    private String tossPredicted; // Predicted toss winner
+    private String tossPredicted;
+
+    @Column(name = "first_inn_score_predicted", nullable = false)
+    private String firstInnScorePredicted;// Predicted toss winner
 
     @Column(name = "team_predicted", nullable = false)
     private String teamPredicted; // Predicted match winner

@@ -1,6 +1,7 @@
 package com.ipl.prediction.iplprediction.service;
 
 import com.ipl.prediction.iplprediction.entity.IplUser;
+import com.ipl.prediction.iplprediction.response.UserResponse;
 
 import java.util.List;
 
@@ -12,5 +13,5 @@ public interface UserService {
 
     IplUser saveUser(IplUser iplUser);
 
-    boolean validatePwd(String userId, String pwd);
+    UserResponse validateUser(String userId);
 }

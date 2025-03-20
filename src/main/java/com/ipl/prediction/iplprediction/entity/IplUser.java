@@ -15,6 +15,7 @@ public class IplUser {
 
     @Column(name = "user_id")
     private String userId;
+    private String name;
     private String location;
     private String pwd;
 

@@ -6,9 +6,9 @@ import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import java.util.List;
 
 public interface PredictionService {
+    PredictionDto getPrediction(String userId, String matchId);
+
     PredictionDto savePrediction(PredictionDto predictionDto);
 
-    PredictionDto editPrediction(Long predictionId, PredictionDto updatedPrediction);
-
-    List<LeaderboardDTO> getLeaderboard();
+    List<LeaderboardDTO> getLeaderboard(String location);
 }
