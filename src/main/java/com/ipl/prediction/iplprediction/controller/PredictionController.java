@@ -5,7 +5,6 @@ import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.PredictionResponse;
 import com.ipl.prediction.iplprediction.service.PredictionService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

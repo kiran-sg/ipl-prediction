@@ -66,9 +66,7 @@ public class PredictionServiceImpl implements PredictionService {
         IplUser user = userRepository.findByUserId(userId);
         Optional<Prediction> prediction = predictionRepository.findByUserAndMatchId(user, matchId);
         return prediction.map(this::predictionToPredictionDto)
-                .orElseGet(() -> {
-                    return null;
-                });
+                .orElseGet(() -> null);
 
     }
 

@@ -22,11 +22,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public IplUser findByUserId(String userId) {
-        return userRepository.findByUserId(userId);
-    }
-
-    @Override
     public IplUser saveUser(IplUser iplUser) {
         return userRepository.save(iplUser);
     }
