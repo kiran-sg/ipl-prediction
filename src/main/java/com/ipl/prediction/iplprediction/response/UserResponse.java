@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class UserResponse {
     private String message;
-    private boolean isValidUser;
+    private boolean validUser;
     private IplUserDto user;
 }
