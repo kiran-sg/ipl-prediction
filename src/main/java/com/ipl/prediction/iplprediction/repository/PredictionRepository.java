@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface PredictionRepository extends JpaRepository<Prediction, Long> {
 
-    @Query("SELECT u, SUM(p.points) as totalPoints " +
+    @Query("SELECT u, COALESCE(SUM(p.points), 0) as totalPoints " +
             "FROM Prediction p JOIN p.user u " +
             "WHERE u.location = ?1 " +
             "GROUP BY u.id " +
