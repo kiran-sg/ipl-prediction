@@ -28,7 +28,7 @@ public class Prediction {
     private String tossPredicted;
 
     @Column(name = "first_inn_score_predicted", nullable = false)
-    private String firstInnScorePredicted;// Predicted toss winner
+    private String firstInnScorePredicted;// Predicted first innings score
 
     @Column(name = "team_predicted", nullable = false)
     private String teamPredicted; // Predicted match winner
@@ -48,6 +48,9 @@ public class Prediction {
     @Column(name = "toss_won")
     private String tossWon; // Actual toss winner
 
+    @Column(name = "first_inn_score")
+    private String firstInnScore;// Actual first innings score
+
     @Column(name = "team_won")
     private String teamWon; // Actual match winner
 
@@ -62,4 +65,7 @@ public class Prediction {
 
     @Column(name = "points")
     private Integer points; // Points earned for the prediction
+
+    @Column(name = "result_updated_time")
+    private LocalDateTime resultUpdatedTime; //Result update time
 }

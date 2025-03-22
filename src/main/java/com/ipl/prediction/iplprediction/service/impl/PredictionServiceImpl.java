@@ -7,6 +7,7 @@ import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
 import com.ipl.prediction.iplprediction.service.PredictionService;
+import com.ipl.prediction.iplprediction.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.ipl.prediction.iplprediction.util.MapperUtil.predictionToPredictionDto;
 
 @Service
 @RequiredArgsConstructor
@@ -25,33 +28,6 @@ public class PredictionServiceImpl implements PredictionService {
     @Autowired
     private UserRepository userRepository;
 
-    private Prediction predictionDtoToPrediction(PredictionDto predictionDto) {
-        Prediction prediction = new Prediction();
-        prediction.setMatchId(predictionDto.getMatchId());
-        prediction.setTossPredicted(predictionDto.getTossPredicted());
-        prediction.setFirstInnScorePredicted(predictionDto.getFirstInnScorePredicted());
-        prediction.setTeamPredicted(predictionDto.getTeamPredicted());
-        prediction.setMomPredicted(predictionDto.getMomPredicted());
-        prediction.setMostRunsScorerPredicted(predictionDto.getMostRunsScorerPredicted());
-        prediction.setMostWicketsTakerPredicted(predictionDto.getMostWicketsTakerPredicted());
-        prediction.setPredictionTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-        return prediction;
-    }
-
-    private PredictionDto predictionToPredictionDto(Prediction prediction) {
-        PredictionDto predictionDto = new PredictionDto();
-        predictionDto.setPredictionId(prediction.getPredictionId());
-        predictionDto.setMatchId(prediction.getMatchId());
-        predictionDto.setUserId(prediction.getUser().getUserId());
-        predictionDto.setTossPredicted(prediction.getTossPredicted());
-        predictionDto.setFirstInnScorePredicted(prediction.getFirstInnScorePredicted());
-        predictionDto.setTeamPredicted(prediction.getTeamPredicted());
-        predictionDto.setMomPredicted(prediction.getMomPredicted());
-        predictionDto.setMostRunsScorerPredicted(prediction.getMostRunsScorerPredicted());
-        predictionDto.setMostWicketsTakerPredicted(prediction.getMostWicketsTakerPredicted());
-        return predictionDto;
-    }
-
     private void updatePrediction(Prediction prediction, PredictionDto predictionDto) {
         prediction.setTossPredicted(predictionDto.getTossPredicted());
         prediction.setFirstInnScorePredicted(predictionDto.getFirstInnScorePredicted());
@@ -59,20 +35,21 @@ public class PredictionServiceImpl implements PredictionService {
         prediction.setMomPredicted(predictionDto.getMomPredicted());
         prediction.setMostRunsScorerPredicted(predictionDto.getMostRunsScorerPredicted());
         prediction.setMostWicketsTakerPredicted(predictionDto.getMostWicketsTakerPredicted());
+        prediction.setPredictionTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
     }
 
     @Override
     public PredictionDto getPrediction(String userId, String matchId) {
         IplUser user = userRepository.findByUserId(userId);
         Optional<Prediction> prediction = predictionRepository.findByUserAndMatchId(user, matchId);
-        return prediction.map(this::predictionToPredictionDto)
+        return prediction.map(MapperUtil::predictionToPredictionDto)
                 .orElse(null);
 
     }
 
     @Override
     public PredictionDto savePrediction(PredictionDto predictionDto) {
-        Prediction prediction = null;
+        Prediction prediction = new Prediction();
         if (null != predictionDto.getPredictionId() && !predictionDto.getPredictionId().equals(0L)) {
             Optional<Prediction> optionalPrediction = predictionRepository.findById(predictionDto.getPredictionId());
             if (optionalPrediction.isPresent()) {
@@ -80,32 +57,18 @@ public class PredictionServiceImpl implements PredictionService {
                 updatePrediction(prediction, predictionDto);
             }
         } else {
-            prediction = predictionDtoToPrediction(predictionDto);
+            updatePrediction(prediction, predictionDto);
+            prediction.setMatchId(predictionDto.getMatchId());
             IplUser user = userRepository.findByUserId(predictionDto.getUserId());
             prediction.setUser(user);
         }
-        if (null != prediction) {
-            prediction = predictionRepository.save(prediction);
-            return predictionToPredictionDto(prediction);
-        }
-        return null;
+        prediction = predictionRepository.save(prediction);
+        return predictionToPredictionDto(prediction);
     }
 
     @Override
     public List<LeaderboardDTO> getLeaderboard(String location) {
         List<Object[]> results = predictionRepository.getLeaderboardByLocation(location);
-
-        /* return IntStream.range(0, results.size())
-                .mapToObj(index -> {
-                    Object[] result = results.get(index);
-                    return new LeaderboardDTO(
-                            ((IplUser) result[0]).getUserId(), // User ID
-                            ((IplUser) result[0]).getLocation(), // User Location
-                            ((Long) result[1]).intValue(), // Total Points
-                            index + 1 // Position (rank)
-                    );
-                })
-                .collect(Collectors.toList()); */
 
         List<LeaderboardDTO> leaderboard = new ArrayList<>();
         int rank = 1; // Initial rank

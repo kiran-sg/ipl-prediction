@@ -25,4 +25,8 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
      * @return An Optional containing the prediction if found.
      */
     Optional<Prediction> findByUserAndMatchId(IplUser user, String matchId);
+
+    Optional<List<Prediction>> findAllByMatchId(String matchId);
+
+    Optional<List<Prediction>> findAllByUser(IplUser user);
 }
