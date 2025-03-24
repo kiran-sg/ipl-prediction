@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ipl.prediction.iplprediction.util.MapperUtil.predictionToPredictionDto;
 
@@ -95,6 +96,8 @@ public class PredictionServiceImpl implements PredictionService {
             position++; // Always increment absolute position
         }
 
-        return leaderboard;
+        return leaderboard.stream()
+                .filter(data -> data.getTotalPoints() != 0)
+                .collect(Collectors.toList());
     }
 }
