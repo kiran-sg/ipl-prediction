@@ -22,11 +22,14 @@ public class PlayerController {
     @PostMapping
     public ResponseEntity<List<IplPlayer>> getPlayersByTeam(@RequestBody PlayerRequest request) throws IOException {
         List<IplPlayer> players = csvService.readPlayersFromCsv();
-        Set<String> teamsSet = Set.copyOf(request.getTeams());
-
-        List<IplPlayer> filteredPlayers = players.stream()
-                .filter(player -> teamsSet.contains(player.getTeam()))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(filteredPlayers);
+        if (null != request.getTeams() && !request.getTeams().isEmpty()) {
+            Set<String> teamsSet = Set.copyOf(request.getTeams());
+            List<IplPlayer> filteredPlayers = players.stream()
+                    .filter(player -> teamsSet.contains(player.getTeam()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(filteredPlayers);
+        } else {
+            return ResponseEntity.ok(players);
+        }
     }
 }

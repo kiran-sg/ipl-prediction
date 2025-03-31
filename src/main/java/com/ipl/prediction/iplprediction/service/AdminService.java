@@ -11,7 +11,5 @@ public interface AdminService {
 
     List<PredictionDto> getPredictionsByMatch(String matchId);
 
-    List<PredictionDto> getPredictionsByUser(String userId);
-
     AdminResponse updateMatchResults(MatchResultDto resultDto);
 }

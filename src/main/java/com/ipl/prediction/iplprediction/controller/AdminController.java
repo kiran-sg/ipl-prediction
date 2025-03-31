@@ -32,15 +32,6 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/predictions/user")
-    public ResponseEntity<AdminResponse> getPredictionsByUser(
-            @RequestParam String user) {
-        AdminResponse response = new AdminResponse();
-        response.setPredictions(adminService.getPredictionsByUser(user));
-        response.setStatus(true);
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping("/match/result")
     public ResponseEntity<AdminResponse> updateMatchResults(
             @RequestBody MatchResultDto matchResult) {

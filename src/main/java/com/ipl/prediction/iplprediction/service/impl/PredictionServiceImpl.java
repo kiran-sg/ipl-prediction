@@ -3,19 +3,20 @@ package com.ipl.prediction.iplprediction.service.impl;
 import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
 import com.ipl.prediction.iplprediction.entity.Prediction;
 import com.ipl.prediction.iplprediction.entity.IplUser;
+import com.ipl.prediction.iplprediction.model.IplMatch;
 import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
+import com.ipl.prediction.iplprediction.service.CsvService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import com.ipl.prediction.iplprediction.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ipl.prediction.iplprediction.util.MapperUtil.predictionToPredictionDto;
@@ -28,6 +29,8 @@ public class PredictionServiceImpl implements PredictionService {
     private PredictionRepository predictionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CsvService csvService;
 
     private void updatePrediction(Prediction prediction, PredictionDto predictionDto) {
         prediction.setTossPredicted(predictionDto.getTossPredicted());
@@ -65,6 +68,28 @@ public class PredictionServiceImpl implements PredictionService {
         }
         prediction = predictionRepository.save(prediction);
         return predictionToPredictionDto(prediction);
+    }
+
+    @Override
+    public List<PredictionDto> getPredictionsByUser(String userId) throws IOException {
+        List<PredictionDto> predictionDtoList = new ArrayList<>();
+        IplUser user = userRepository.findByUserId(userId);
+        Optional<List<Prediction>> predictions = predictionRepository.findAllByUser(user);
+        List<IplMatch> matches = csvService.readMatchesFromCsv();
+        predictions.ifPresent(predictionList ->
+                predictionList.forEach(prediction ->
+                        predictionDtoList.add(MapperUtil.predictionToPredictionDto(prediction))));
+
+        predictionDtoList.forEach(a -> matches.stream()
+                .filter(b -> Objects.equals(a.getMatchId(), b.getMatchNo()))
+                .findFirst()
+                .ifPresent(b -> {
+                    a.setMatch(b.getHome() + " VS " + b.getAway());
+                }));
+
+        return predictionDtoList.stream()
+                .sorted(Comparator.comparingInt(dto -> Integer.parseInt(dto.getMatchId())))
+                .toList();
     }
 
     @Override

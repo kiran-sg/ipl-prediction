@@ -55,15 +55,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<PredictionDto> getPredictionsByUser(String userId) {
-        List<PredictionDto> predictionDtoList = new ArrayList<>();
-        IplUser user = userRepository.findByUserId(userId);
-        Optional<List<Prediction>> predictions = predictionRepository.findAllByUser(user);
-        predictions.ifPresent(predictionList -> predictionList.forEach(prediction -> predictionDtoList.add(MapperUtil.predictionToPredictionDto(prediction))));
-        return predictionDtoList;
-    }
-
-    @Override
     public AdminResponse updateMatchResults(MatchResultDto resultDto) {
         AdminResponse response = new AdminResponse();
         Optional<List<Prediction>> predictions = predictionRepository
