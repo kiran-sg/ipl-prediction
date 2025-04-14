@@ -12,6 +12,8 @@ public class PredictionDto {
     private Long predictionId;
     private String matchId;
     private String match;
+    private String matchDateTime;
+    private String matchDate;
     private String userId;
     private IplUserDto user;
     private String tossPredicted;

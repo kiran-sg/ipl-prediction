@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,8 @@ public class PredictionServiceImpl implements PredictionService {
     private UserRepository userRepository;
     @Autowired
     private CsvService csvService;
+    DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MMM");
 
     private void updatePrediction(Prediction prediction, PredictionDto predictionDto) {
         prediction.setTossPredicted(predictionDto.getTossPredicted());
@@ -80,15 +84,22 @@ public class PredictionServiceImpl implements PredictionService {
                 predictionList.forEach(prediction ->
                         predictionDtoList.add(MapperUtil.predictionToPredictionDto(prediction))));
 
-        predictionDtoList.forEach(a -> matches.stream()
-                .filter(b -> Objects.equals(a.getMatchId(), b.getMatchNo()))
+        predictionDtoList.forEach(predictionDto -> matches.stream()
+                .filter(match -> Objects.equals(predictionDto.getMatchId(), match.getMatchNo()))
                 .findFirst()
-                .ifPresent(b -> {
-                    a.setMatch(b.getHome() + " VS " + b.getAway());
+                .ifPresent(match -> {
+                    predictionDto.setMatchId(match.getMatchNo());
+                    predictionDto.setMatch(match.getHome() + " VS " + match.getAway());
+                    predictionDto.setMatchDateTime(match.getDateTime());
+                    String formattedDate = LocalDateTime.parse(
+                            match.getDateTime(), inputFormatter).format(outputFormatter);
+                    predictionDto.setMatchDate(formattedDate);
                 }));
 
         return predictionDtoList.stream()
-                .sorted(Comparator.comparingInt(dto -> Integer.parseInt(dto.getMatchId())))
+                .sorted(Comparator.comparing(dto ->
+                        LocalDateTime.parse(dto.getMatchDateTime(), inputFormatter),
+                        Comparator.reverseOrder()))
                 .toList();
     }
 
