@@ -43,7 +43,7 @@ public class PredictionController {
             predictionResponse.setMessage("Login session expired. Please login.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(predictionResponse);
         }
-        PredictionDto savedPrediction = predictionService.savePrediction(prediction);
+        PredictionDto savedPrediction = predictionService.savePrediction(prediction, prediction.getUserId());
         predictionResponse.setMessage("Prediction saved successfully");
         predictionResponse.setStatus(true);
         predictionResponse.setPrediction(savedPrediction);

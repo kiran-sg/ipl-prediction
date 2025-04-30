@@ -9,7 +9,7 @@ import java.util.List;
 public interface PredictionService {
     PredictionDto getPrediction(String userId, String matchId);
 
-    PredictionDto savePrediction(PredictionDto predictionDto);
+    PredictionDto savePrediction(PredictionDto predictionDto, String userId);
 
     List<PredictionDto> getPredictionsByUser(String userId) throws IOException;
 

@@ -56,22 +56,28 @@ public class PredictionServiceImpl implements PredictionService {
     }
 
     @Override
-    public PredictionDto savePrediction(PredictionDto predictionDto) {
-        Prediction prediction = new Prediction();
-        if (null != predictionDto.getPredictionId() && !predictionDto.getPredictionId().equals(0L)) {
-            Optional<Prediction> optionalPrediction = predictionRepository.findById(predictionDto.getPredictionId());
-            if (optionalPrediction.isPresent()) {
-                prediction = optionalPrediction.get();
-                updatePrediction(prediction, predictionDto);
-            }
+    public PredictionDto savePrediction(PredictionDto predictionDto, String userId) {
+        IplUser user = userRepository.findByUserId(predictionDto.getUserId());
+        Optional<Prediction> optionalPrediction = predictionRepository
+                .findByUserAndMatchId(user, predictionDto.getMatchId());
+
+        if (optionalPrediction.isPresent()) {
+            System.out.println("Updating existing prediction for user: "
+                    + userId + " and match id: " + predictionDto.getMatchId());
+            Prediction existingPrediction = optionalPrediction.get();
+            updatePrediction(existingPrediction, predictionDto);
+            Prediction updatedPrediction = predictionRepository.save(existingPrediction);
+            return predictionToPredictionDto(updatedPrediction);
         } else {
-            updatePrediction(prediction, predictionDto);
-            prediction.setMatchId(predictionDto.getMatchId());
-            IplUser user = userRepository.findByUserId(predictionDto.getUserId());
-            prediction.setUser(user);
+            System.out.println("No existing prediction found for the given user: "
+                    + user + " and match ID: " + predictionDto.getMatchId());
+            Prediction newPrediction = new Prediction();
+            updatePrediction(newPrediction, predictionDto);
+            newPrediction.setMatchId(predictionDto.getMatchId());
+            newPrediction.setUser(user);
+            Prediction savedPrediction = predictionRepository.save(newPrediction);
+            return predictionToPredictionDto(savedPrediction);
         }
-        prediction = predictionRepository.save(prediction);
-        return predictionToPredictionDto(prediction);
     }
 
     @Override
