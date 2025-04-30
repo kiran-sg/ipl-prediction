@@ -63,7 +63,7 @@ public class PredictionServiceImpl implements PredictionService {
 
         if (optionalPrediction.isPresent()) {
             System.out.println("Updating existing prediction for user: "
-                    + userId + " and match id: " + predictionDto.getMatchId());
+                    + userId + " and match ID: " + predictionDto.getMatchId());
             Prediction existingPrediction = optionalPrediction.get();
             updatePrediction(existingPrediction, predictionDto);
             Prediction updatedPrediction = predictionRepository.save(existingPrediction);
