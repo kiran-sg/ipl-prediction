@@ -2,6 +2,7 @@ package com.ipl.prediction.iplprediction.controller;
 
 import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
+import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import com.ipl.prediction.iplprediction.model.IplMatch;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.ipl.prediction.iplprediction.util.CommonUtil.isPredictionAllowed;
+import static com.ipl.prediction.iplprediction.util.CommonUtil.isTournamentPredictionAllowed;
 
 @RestController
 @RequestMapping("/api/predictions")
@@ -65,6 +67,38 @@ public class PredictionController {
             @RequestParam String user) throws IOException {
         AdminResponse response = new AdminResponse();
         response.setPredictions(predictionService.getPredictionsByUser(user));
+        response.setStatus(true);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/tournament")
+    public ResponseEntity<PredictionResponse> saveTournamentPrediction(
+            @RequestBody TournamentPredictionDto tournamentPredictionDto) {
+        PredictionResponse predictionResponse = new PredictionResponse();
+        if (!isTournamentPredictionAllowed()) {
+            predictionResponse.setStatus(false);
+            predictionResponse.setMessage("Season Prediction is closed. You can't predict now.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(predictionResponse);
+        }
+        if (tournamentPredictionDto.getUserId() == null) {
+            predictionResponse.setStatus(false);
+            predictionResponse.setInvalidUser(true);
+            predictionResponse.setMessage("Login session expired. Please login.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(predictionResponse);
+        }
+        TournamentPredictionDto savedPrediction = predictionService
+                .saveTournamentPrediction(tournamentPredictionDto, tournamentPredictionDto.getUserId());
+        predictionResponse.setMessage("Season Prediction saved successfully");
+        predictionResponse.setStatus(true);
+        predictionResponse.setTournamentPrediction(savedPrediction);
+        return ResponseEntity.ok(predictionResponse);
+    }
+
+    @GetMapping("/tournament")
+    public ResponseEntity<PredictionResponse> getTournamentPredictionByUser(
+            @RequestParam String user) throws IOException {
+        PredictionResponse response = new PredictionResponse();
+        response.setTournamentPrediction(predictionService.getTournamentPredictionByUser(user));
         response.setStatus(true);
         return ResponseEntity.ok(response);
     }

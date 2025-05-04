@@ -1,11 +1,14 @@
 package com.ipl.prediction.iplprediction.service.impl;
 
 import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
+import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import com.ipl.prediction.iplprediction.entity.Prediction;
 import com.ipl.prediction.iplprediction.entity.IplUser;
+import com.ipl.prediction.iplprediction.entity.TournamentPrediction;
 import com.ipl.prediction.iplprediction.model.IplMatch;
 import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
+import com.ipl.prediction.iplprediction.repository.TournamentPredictionRepository;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
 import com.ipl.prediction.iplprediction.service.CsvService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
@@ -15,13 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.ipl.prediction.iplprediction.util.MapperUtil.predictionToPredictionDto;
+import static com.ipl.prediction.iplprediction.util.MapperUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,16 +37,8 @@ public class PredictionServiceImpl implements PredictionService {
     private CsvService csvService;
     DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MMM");
-
-    private void updatePrediction(Prediction prediction, PredictionDto predictionDto) {
-        prediction.setTossPredicted(predictionDto.getTossPredicted());
-        prediction.setFirstInnScorePredicted(predictionDto.getFirstInnScorePredicted());
-        prediction.setTeamPredicted(predictionDto.getTeamPredicted());
-        prediction.setMomPredicted(predictionDto.getMomPredicted());
-        prediction.setMostRunsScorerPredicted(predictionDto.getMostRunsScorerPredicted());
-        prediction.setMostWicketsTakerPredicted(predictionDto.getMostWicketsTakerPredicted());
-        prediction.setPredictionTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-    }
+    @Autowired
+    private TournamentPredictionRepository tournamentPredictionRepository;
 
     @Override
     public PredictionDto getPrediction(String userId, String matchId) {
@@ -107,6 +101,38 @@ public class PredictionServiceImpl implements PredictionService {
                         LocalDateTime.parse(dto.getMatchDateTime(), inputFormatter),
                         Comparator.reverseOrder()))
                 .toList();
+    }
+
+    @Override
+    public TournamentPredictionDto saveTournamentPrediction(
+            TournamentPredictionDto tournamentPredictionDto, String userId) {
+        IplUser user = userRepository.findByUserId(tournamentPredictionDto.getUserId());
+        Optional<TournamentPrediction> opTournamentPrediction = tournamentPredictionRepository
+                .findByUser(user);
+
+        if (opTournamentPrediction.isPresent()) {
+            System.out.println("Updating existing tournament prediction for user: " + userId);
+            TournamentPrediction existingPrediction = opTournamentPrediction.get();
+            updateTournamentPrediction(existingPrediction, tournamentPredictionDto);
+            TournamentPrediction updatedPrediction = tournamentPredictionRepository.save(existingPrediction);
+            return tournamentPredictionToTournamentPredictionDto(updatedPrediction);
+        } else {
+            System.out.println("No existing tournament prediction found for the given user: " + user);
+            TournamentPrediction newPrediction = new TournamentPrediction();
+            updateTournamentPrediction(newPrediction, tournamentPredictionDto);
+            newPrediction.setUser(user);
+            TournamentPrediction savedPrediction = tournamentPredictionRepository.save(newPrediction);
+            return tournamentPredictionToTournamentPredictionDto(savedPrediction);
+        }
+    }
+
+    @Override
+    public TournamentPredictionDto getTournamentPredictionByUser(String userId) {
+        IplUser user = userRepository.findByUserId(userId);
+        Optional<TournamentPrediction> opTournamentPrediction = tournamentPredictionRepository.findByUser(user);
+        return opTournamentPrediction
+                .map(MapperUtil::tournamentPredictionToTournamentPredictionDto)
+                .orElse(null);
     }
 
     @Override

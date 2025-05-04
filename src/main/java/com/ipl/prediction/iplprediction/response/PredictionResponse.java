@@ -1,6 +1,7 @@
 package com.ipl.prediction.iplprediction.response;
 
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
+import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,4 +12,5 @@ public class PredictionResponse {
     private boolean status;
     private boolean invalidUser;
     private PredictionDto prediction;
+    private TournamentPredictionDto tournamentPrediction;
 }

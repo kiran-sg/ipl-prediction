@@ -1,6 +1,8 @@
 package com.ipl.prediction.iplprediction.util;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CommonUtil {
@@ -13,5 +15,11 @@ public class CommonUtil {
 
         return !(currentTime.toLocalDate().isEqual(matchTime.toLocalDate())
                 && currentTime.isAfter(oneHourBeforeMatch));
+    }
+
+    public static boolean isTournamentPredictionAllowed() {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+        ZonedDateTime cutoffTime = ZonedDateTime.of(2025, 5, 9, 18, 0, 0, 0, ZoneId.of("Asia/Kolkata"));
+        return currentTime.isBefore(cutoffTime);
     }
 }
