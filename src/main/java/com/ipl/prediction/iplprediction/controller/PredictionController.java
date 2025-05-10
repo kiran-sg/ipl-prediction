@@ -33,7 +33,7 @@ public class PredictionController {
     public ResponseEntity<PredictionResponse> savePrediction(
             @RequestBody PredictionDto prediction) throws IOException {
         PredictionResponse predictionResponse = new PredictionResponse();
-        IplMatch match = findMatchById(prediction.getMatchId());
+        /*IplMatch match = findMatchById(prediction.getMatchId());
         if (!isPredictionAllowed(match.getDateTime())) {
             predictionResponse.setStatus(false);
             predictionResponse.setMessage("Prediction is locked for this match");
@@ -48,7 +48,7 @@ public class PredictionController {
         PredictionDto savedPrediction = predictionService.savePrediction(prediction, prediction.getUserId());
         predictionResponse.setMessage("Prediction saved successfully");
         predictionResponse.setStatus(true);
-        predictionResponse.setPrediction(savedPrediction);
+        predictionResponse.setPrediction(savedPrediction);*/
         return ResponseEntity.ok(predictionResponse);
     }
 
