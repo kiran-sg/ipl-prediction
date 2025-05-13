@@ -2,7 +2,6 @@ package com.ipl.prediction.iplprediction.service.impl;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
-import com.ipl.prediction.iplprediction.entity.IplUser;
 import com.ipl.prediction.iplprediction.entity.Prediction;
 import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
@@ -64,6 +63,19 @@ public class AdminServiceImpl implements AdminService {
         response.setMessage("Results updated for Match "
                 + resultDto.getMatchId() + " : " + resultDto.getMatch());
         response.setStatus(true);
+        return response;
+    }
+
+    @Override
+    public AdminResponse deletePredictions(List<String> matchIds) {
+        AdminResponse response = new AdminResponse();
+        Optional<List<Prediction>> predictions = predictionRepository.findAllByMatchIdIn(matchIds);
+        if (predictions.isPresent()) {
+            List<Prediction> predictionList = predictions.get();
+            predictionRepository.deleteAll(predictionList);
+            response.setStatus(true);
+            response.setMessage("Predictions deleted successfully for match: " + matchIds);
+        }
         return response;
     }
 

@@ -1,6 +1,7 @@
 package com.ipl.prediction.iplprediction.controller;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
+import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,13 @@ public class AdminController {
     public ResponseEntity<AdminResponse> updateMatchResults(
             @RequestBody MatchResultDto matchResult) {
         AdminResponse response = adminService.updateMatchResults(matchResult);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/prediction/delete")
+    public ResponseEntity<AdminResponse> deletePredictions(
+            @RequestBody PredictionRequest request) {
+        AdminResponse response = adminService.deletePredictions(request.getMatchIds());
         return ResponseEntity.ok(response);
     }
 }

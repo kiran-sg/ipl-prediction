@@ -12,4 +12,6 @@ public interface AdminService {
     List<PredictionDto> getPredictionsByMatch(String matchId);
 
     AdminResponse updateMatchResults(MatchResultDto resultDto);
+
+    AdminResponse deletePredictions(List<String> matchId);
 }

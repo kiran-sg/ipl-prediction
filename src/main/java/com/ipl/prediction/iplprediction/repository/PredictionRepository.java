@@ -29,4 +29,10 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     Optional<List<Prediction>> findAllByMatchId(String matchId);
 
     Optional<List<Prediction>> findAllByUser(IplUser user);
+
+    //get list of predictions by match ids
+    Optional<List<Prediction>> findAllByMatchIdIn(List<String> matchIds);
+
+    //get list of predictions by user and match ids
+    Optional<List<Prediction>> findAllByUserAndMatchIdIn(IplUser user, List<String> matchIds);
 }
