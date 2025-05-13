@@ -10,6 +10,7 @@ import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.repository.TournamentPredictionRepository;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
+import com.ipl.prediction.iplprediction.response.PredictionResponse;
 import com.ipl.prediction.iplprediction.service.CsvService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import com.ipl.prediction.iplprediction.util.MapperUtil;
@@ -133,6 +134,24 @@ public class PredictionServiceImpl implements PredictionService {
         return opTournamentPrediction
                 .map(MapperUtil::tournamentPredictionToTournamentPredictionDto)
                 .orElse(null);
+    }
+
+    @Override
+    public PredictionResponse getPredictionsForUserByMatches(String userId, List<String> matchIds) {
+        PredictionResponse predictionResponse = new PredictionResponse();
+        IplUser user = userRepository.findByUserId(userId);
+        Optional<List<Prediction>> predictions = predictionRepository.findAllByUserAndMatchIdIn(user, matchIds);
+        List<PredictionDto> predictionDtoList = new ArrayList<>();
+        predictions.ifPresent(predictionList ->
+                predictionList.forEach(prediction -> {
+                    PredictionDto dto = new PredictionDto();
+                    dto.setPredictionId(prediction.getPredictionId());
+                    dto.setMatchId(prediction.getMatchId());
+                    dto.setUserId(prediction.getUser().getUserId());
+                    predictionDtoList.add(dto);
+                }));
+        predictionResponse.setPredictions(predictionDtoList);
+        return predictionResponse;
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class PredictionResponse {
@@ -13,4 +15,5 @@ public class PredictionResponse {
     private boolean invalidUser;
     private PredictionDto prediction;
     private TournamentPredictionDto tournamentPrediction;
+    private List<PredictionDto> predictions;
 }
