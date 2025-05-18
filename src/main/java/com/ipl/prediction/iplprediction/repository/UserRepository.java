@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<IplUser, Long> {
 
-    @Query("SELECT u FROM ipl_users u WHERE u.userId = ?1")
+    @Query("SELECT u FROM IplUser u WHERE u.userId = ?1")
     IplUser findByUserId(String userId);
 
 }

@@ -19,7 +19,7 @@ public class CommonUtil {
 
     public static boolean isTournamentPredictionAllowed() {
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        ZonedDateTime cutoffTime = ZonedDateTime.of(2025, 5, 17, 12, 0, 0, 0, ZoneId.of("Asia/Kolkata"));
+        ZonedDateTime cutoffTime = ZonedDateTime.of(2025, 5, 23, 12, 0, 0, 0, ZoneId.of("Asia/Kolkata"));
         return currentTime.isBefore(cutoffTime);
     }
 }
