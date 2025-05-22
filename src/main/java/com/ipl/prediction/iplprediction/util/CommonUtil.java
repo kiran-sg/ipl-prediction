@@ -13,8 +13,9 @@ public class CommonUtil {
         LocalDateTime oneHourBeforeMatch = matchTime.minusHours(1);
         LocalDateTime currentTime = LocalDateTime.now();
 
-        return !(currentTime.toLocalDate().isEqual(matchTime.toLocalDate())
-                && currentTime.isAfter(oneHourBeforeMatch));
+        /* return !(currentTime.toLocalDate().isEqual(matchTime.toLocalDate())
+                && currentTime.isAfter(oneHourBeforeMatch)); */
+        return currentTime.isBefore(oneHourBeforeMatch);
     }
 
     public static boolean isTournamentPredictionAllowed() {
