@@ -183,19 +183,19 @@ public class PredictionServiceImpl implements PredictionService {
             position++; // Always increment absolute position
         }
 
-        return leaderboard.stream()
-                .filter(data -> data.getTotalPoints() != 0)
-                .collect(Collectors.toList());
-
 //        return leaderboard.stream()
-//                .filter(data -> data.getTotalPoints() != 0 && data.getPosition() <= 5)
-//                .map(data -> new LeaderboardDTO(
-//                        data.getUserId(),
-//                        data.getUserName(),
-//                        data.getLocation(),
-//                        null,
-//                        data.getPosition()
-//                ))
+//                .filter(data -> data.getTotalPoints() != 0)
 //                .collect(Collectors.toList());
+
+        return leaderboard.stream()
+                .filter(data -> data.getTotalPoints() != 0 && data.getPosition() <= 5)
+                .map(data -> new LeaderboardDTO(
+                        data.getUserId(),
+                        data.getUserName(),
+                        data.getLocation(),
+                        null,
+                        data.getPosition()
+                ))
+                .collect(Collectors.toList());
     }
 }
