@@ -3,18 +3,17 @@ package com.ipl.prediction.iplprediction.controller;
 import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
-import com.ipl.prediction.iplprediction.model.IplMatch;
+import com.ipl.prediction.iplprediction.entity.IplMatch;
+import com.ipl.prediction.iplprediction.repository.MatchRepository;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.response.PredictionResponse;
-import com.ipl.prediction.iplprediction.service.CsvService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.ipl.prediction.iplprediction.util.CommonUtil.isPredictionAllowed;
@@ -27,11 +26,11 @@ public class PredictionController {
     @Autowired
     private PredictionService predictionService;
     @Autowired
-    private CsvService csvService;
+    private MatchRepository matchRepository;
 
     @PostMapping
     public ResponseEntity<PredictionResponse> savePrediction(
-            @RequestBody PredictionDto prediction) throws IOException {
+            @RequestBody PredictionDto prediction) {
         PredictionResponse predictionResponse = new PredictionResponse();
         IplMatch match = findMatchById(prediction.getMatchId());
         if (!isPredictionAllowed(match.getDateTime())) {
@@ -64,7 +63,7 @@ public class PredictionController {
 
     @GetMapping
     public ResponseEntity<AdminResponse> getPredictionsByUser(
-            @RequestParam String user) throws IOException {
+            @RequestParam String user) {
         AdminResponse response = new AdminResponse();
         response.setPredictions(predictionService.getPredictionsByUser(user));
         response.setStatus(true);
@@ -105,7 +104,7 @@ public class PredictionController {
 
     @GetMapping("/tournament")
     public ResponseEntity<PredictionResponse> getTournamentPredictionByUser(
-            @RequestParam String user) throws IOException {
+            @RequestParam String user) {
         PredictionResponse response = new PredictionResponse();
         response.setTournamentPrediction(predictionService.getTournamentPredictionByUser(user));
         response.setStatus(true);
@@ -119,10 +118,7 @@ public class PredictionController {
         return ResponseEntity.ok(leaderboard);
     }
 
-    private IplMatch findMatchById(String matchId) throws IOException {
-        return csvService.readMatchesFromCsv().stream()
-                .filter(match -> match.getMatchNo().equals(matchId))
-                .findFirst()
-                .orElse(null);
+    private IplMatch findMatchById(String matchId) {
+        return matchRepository.findByMatchNo(matchId).orElse(null);
     }
 }

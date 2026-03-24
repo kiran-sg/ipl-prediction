@@ -4,9 +4,12 @@ import com.ipl.prediction.iplprediction.dto.MatchResultDto;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
+import com.ipl.prediction.iplprediction.service.CricApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -14,6 +17,14 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private CricApiService cricApiService;
+
+    @PostMapping("/sync/results")
+    public ResponseEntity<Map<String, Object>> syncResults() {
+        return ResponseEntity.ok(cricApiService.syncMatchResults());
+    }
 
     @GetMapping("/predictions/match")
     public ResponseEntity<AdminResponse> getPredictionsByMatch(

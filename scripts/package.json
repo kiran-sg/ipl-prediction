@@ -1,0 +1,7 @@
+{
+  "name": "ipl-scraper",
+  "private": true,
+  "dependencies": {
+    "playwright": "^1.42.0"
+  }
+}

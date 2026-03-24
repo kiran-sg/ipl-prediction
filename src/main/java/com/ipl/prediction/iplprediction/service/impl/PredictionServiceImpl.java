@@ -5,21 +5,21 @@ import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import com.ipl.prediction.iplprediction.entity.Prediction;
 import com.ipl.prediction.iplprediction.entity.IplUser;
 import com.ipl.prediction.iplprediction.entity.TournamentPrediction;
-import com.ipl.prediction.iplprediction.model.IplMatch;
+import com.ipl.prediction.iplprediction.entity.IplMatch;
+import com.ipl.prediction.iplprediction.repository.MatchRepository;
 import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.repository.TournamentPredictionRepository;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
 import com.ipl.prediction.iplprediction.response.PredictionResponse;
-import com.ipl.prediction.iplprediction.service.CsvService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import com.ipl.prediction.iplprediction.util.MapperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,9 +35,15 @@ public class PredictionServiceImpl implements PredictionService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private CsvService csvService;
-    DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private MatchRepository matchRepository;
     DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MMM");
+
+    private static LocalDateTime parseMatchDateTime(String dateTime) {
+        if (dateTime.contains("T")) {
+            return OffsetDateTime.parse(dateTime).toLocalDateTime();
+        }
+        return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
     @Autowired
     private TournamentPredictionRepository tournamentPredictionRepository;
 
@@ -76,11 +82,11 @@ public class PredictionServiceImpl implements PredictionService {
     }
 
     @Override
-    public List<PredictionDto> getPredictionsByUser(String userId) throws IOException {
+    public List<PredictionDto> getPredictionsByUser(String userId) {
         List<PredictionDto> predictionDtoList = new ArrayList<>();
         IplUser user = userRepository.findByUserId(userId);
         Optional<List<Prediction>> predictions = predictionRepository.findAllByUser(user);
-        List<IplMatch> matches = csvService.readMatchesFromCsv();
+        List<IplMatch> matches = matchRepository.findAll();
         predictions.ifPresent(predictionList ->
                 predictionList.forEach(prediction ->
                         predictionDtoList.add(MapperUtil.predictionToPredictionDto(prediction))));
@@ -92,14 +98,14 @@ public class PredictionServiceImpl implements PredictionService {
                     predictionDto.setMatchId(match.getMatchNo());
                     predictionDto.setMatch(match.getHome() + " VS " + match.getAway());
                     predictionDto.setMatchDateTime(match.getDateTime());
-                    String formattedDate = LocalDateTime.parse(
-                            match.getDateTime(), inputFormatter).format(outputFormatter);
+                    String formattedDate = parseMatchDateTime(
+                            match.getDateTime()).format(outputFormatter);
                     predictionDto.setMatchDate(formattedDate);
                 }));
 
         return predictionDtoList.stream()
                 .sorted(Comparator.comparing(dto ->
-                        LocalDateTime.parse(dto.getMatchDateTime(), inputFormatter),
+                        parseMatchDateTime(dto.getMatchDateTime()),
                         Comparator.reverseOrder()))
                 .toList();
     }
@@ -189,13 +195,6 @@ public class PredictionServiceImpl implements PredictionService {
 
         return leaderboard.stream()
                 .filter(data -> data.getTotalPoints() != 0 && data.getPosition() <= 5)
-                .map(data -> new LeaderboardDTO(
-                        data.getUserId(),
-                        data.getUserName(),
-                        data.getLocation(),
-                        null,
-                        data.getPosition()
-                ))
                 .collect(Collectors.toList());
     }
 }

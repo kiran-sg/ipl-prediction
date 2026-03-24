@@ -17,7 +17,7 @@ public class IplUser {
     private String userId;
     private String name;
     private String location;
-    @Column(name = "prev_points")
-    private Integer prevPoints;
+    @Column(name = "is_admin")
+    private Boolean isAdmin = false;
 
 }
