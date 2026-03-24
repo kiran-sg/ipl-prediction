@@ -66,6 +66,9 @@ public class Prediction {
     @Column(name = "points")
     private Integer points; // Points earned for the prediction
 
+    @Column(name = "surge_used")
+    private Boolean surgeUsed = false;
+
     @Column(name = "result_updated_time")
     private LocalDateTime resultUpdatedTime; //Result update time
 }

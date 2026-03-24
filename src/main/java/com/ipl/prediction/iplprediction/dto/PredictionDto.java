@@ -29,4 +29,5 @@ public class PredictionDto {
     private String mostRunsScorer;
     private String mostWicketsTaker;
     private Integer points;
+    private Boolean surgeUsed;
 }

@@ -11,4 +11,5 @@ public class PredictionRequest {
     private String userId;
     private String matchId;
     private List<String> matchIds;
+    private Boolean surgeUsed;
 }

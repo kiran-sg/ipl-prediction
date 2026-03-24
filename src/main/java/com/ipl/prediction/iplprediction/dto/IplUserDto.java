@@ -12,4 +12,5 @@ public class IplUserDto {
     private String location;
     private String pwd;
     private Boolean isAdmin;
+    private Integer surgesRemaining;
 }

@@ -20,4 +20,7 @@ public class IplUser {
     @Column(name = "is_admin")
     private Boolean isAdmin = false;
 
+    @Column(name = "surges_remaining")
+    private Integer surgesRemaining = 3;
+
 }

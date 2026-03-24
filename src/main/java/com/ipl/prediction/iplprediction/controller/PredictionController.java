@@ -44,11 +44,18 @@ public class PredictionController {
             predictionResponse.setMessage("Login session expired. Please login.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(predictionResponse);
         }
-        PredictionDto savedPrediction = predictionService.savePrediction(prediction, prediction.getUserId());
-        predictionResponse.setMessage("Prediction saved successfully");
-        predictionResponse.setStatus(true);
-        predictionResponse.setPrediction(savedPrediction);
-        return ResponseEntity.ok(predictionResponse);
+        try {
+            PredictionDto savedPrediction = predictionService.savePrediction(prediction, prediction.getUserId());
+            predictionResponse.setMessage("Prediction saved successfully");
+            predictionResponse.setStatus(true);
+            predictionResponse.setPrediction(savedPrediction);
+            predictionResponse.setSurgesRemaining(savedPrediction.getUser().getSurgesRemaining());
+            return ResponseEntity.ok(predictionResponse);
+        } catch (RuntimeException e) {
+            predictionResponse.setStatus(false);
+            predictionResponse.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(predictionResponse);
+        }
     }
 
     @PostMapping("/match")

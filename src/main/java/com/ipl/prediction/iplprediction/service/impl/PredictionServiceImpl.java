@@ -62,17 +62,40 @@ public class PredictionServiceImpl implements PredictionService {
         Optional<Prediction> optionalPrediction = predictionRepository
                 .findByUserAndMatchId(user, predictionDto.getMatchId());
 
+        boolean wantsSurge = predictionDto.getSurgeUsed() != null && predictionDto.getSurgeUsed();
+
         if (optionalPrediction.isPresent()) {
-            System.out.println("Updating existing prediction for user: "
-                    + userId + " and match ID: " + predictionDto.getMatchId());
             Prediction existingPrediction = optionalPrediction.get();
+            boolean hadSurge = existingPrediction.getSurgeUsed() != null && existingPrediction.getSurgeUsed();
+
+            if (wantsSurge && !hadSurge) {
+                if (user.getSurgesRemaining() == null || user.getSurgesRemaining() <= 0) {
+                    throw new RuntimeException("No surges remaining");
+                }
+                user.setSurgesRemaining(user.getSurgesRemaining() - 1);
+                userRepository.save(user);
+                existingPrediction.setSurgeUsed(true);
+            } else if (!wantsSurge && hadSurge) {
+                user.setSurgesRemaining((user.getSurgesRemaining() == null ? 0 : user.getSurgesRemaining()) + 1);
+                userRepository.save(user);
+                existingPrediction.setSurgeUsed(false);
+            }
+
             updatePrediction(existingPrediction, predictionDto);
             Prediction updatedPrediction = predictionRepository.save(existingPrediction);
             return predictionToPredictionDto(updatedPrediction);
         } else {
-            System.out.println("No existing prediction found for the given user: "
-                    + user + " and match ID: " + predictionDto.getMatchId());
             Prediction newPrediction = new Prediction();
+
+            if (wantsSurge) {
+                if (user.getSurgesRemaining() == null || user.getSurgesRemaining() <= 0) {
+                    throw new RuntimeException("No surges remaining");
+                }
+                user.setSurgesRemaining(user.getSurgesRemaining() - 1);
+                userRepository.save(user);
+                newPrediction.setSurgeUsed(true);
+            }
+
             updatePrediction(newPrediction, predictionDto);
             newPrediction.setMatchId(predictionDto.getMatchId());
             newPrediction.setUser(user);

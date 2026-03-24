@@ -24,6 +24,7 @@ public class MapperUtil {
         predictionDto.setMostRunsScorerPredicted(prediction.getMostRunsScorerPredicted());
         predictionDto.setMostWicketsTakerPredicted(prediction.getMostWicketsTakerPredicted());
         predictionDto.setPoints(prediction.getPoints() == null ? 0 : prediction.getPoints());
+        predictionDto.setSurgeUsed(prediction.getSurgeUsed() != null && prediction.getSurgeUsed());
         return predictionDto;
     }
 
@@ -74,6 +75,7 @@ public class MapperUtil {
         iplUserDto.setName(iplUser.getName());
         iplUserDto.setUserId(iplUserDto.getUserId());
         iplUserDto.setLocation(iplUser.getLocation());
+        iplUserDto.setSurgesRemaining(iplUser.getSurgesRemaining());
         return iplUserDto;
     }
 }

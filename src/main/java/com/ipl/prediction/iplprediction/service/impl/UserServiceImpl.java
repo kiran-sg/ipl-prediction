@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService {
         iplUserDto.setName(user.getName());
         iplUserDto.setLocation(user.getLocation());
         iplUserDto.setIsAdmin(user.getIsAdmin());
+        iplUserDto.setSurgesRemaining(user.getSurgesRemaining());
         return iplUserDto;
     }
 }

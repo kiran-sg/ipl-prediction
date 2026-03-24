@@ -112,6 +112,11 @@ public class AdminServiceImpl implements AdminService {
         if (prediction.getMomPredicted().equals(resultDto.getPlayerOfTheMatch())) {
             totalPointsWonByUser += 3;
         }
+
+        if (prediction.getSurgeUsed() != null && prediction.getSurgeUsed()) {
+            totalPointsWonByUser *= 2;
+        }
+
         return totalPointsWonByUser;
     }
 }

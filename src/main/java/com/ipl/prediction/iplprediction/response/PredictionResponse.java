@@ -16,4 +16,5 @@ public class PredictionResponse {
     private PredictionDto prediction;
     private TournamentPredictionDto tournamentPrediction;
     private List<PredictionDto> predictions;
+    private Integer surgesRemaining;
 }
