@@ -19,7 +19,10 @@ public class AdminInterceptor implements HandlerInterceptor {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
-        String userId = (String) request.getSession().getAttribute("userId");
+        String userId = request.getHeader("X-User-Id");
+        if (userId == null) {
+            userId = (String) request.getSession().getAttribute("userId");
+        }
         if (userId != null) {
             IplUser user = userRepository.findByUserId(userId);
             if (user != null && Boolean.TRUE.equals(user.getIsAdmin())) {
