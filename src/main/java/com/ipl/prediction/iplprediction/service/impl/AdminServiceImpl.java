@@ -94,22 +94,28 @@ public class AdminServiceImpl implements AdminService {
     private int totalPointsWonByUser(Prediction prediction, MatchResultDto resultDto) {
         int totalPointsWonByUser = 0;
 
-        if (prediction.getTossPredicted().equals(resultDto.getTossWon())) {
+        if (isValid(prediction.getTossPredicted()) && isValid(resultDto.getTossWon())
+                && prediction.getTossPredicted().equals(resultDto.getTossWon())) {
             totalPointsWonByUser += 3;
         }
-        if (prediction.getFirstInnScorePredicted().equals(resultDto.getFirstInnScore())) {
+        if (isValid(prediction.getFirstInnScorePredicted()) && isValid(resultDto.getFirstInnScore())
+                && prediction.getFirstInnScorePredicted().equals(resultDto.getFirstInnScore())) {
             totalPointsWonByUser += 3;
         }
-        if (prediction.getTeamPredicted().equals(resultDto.getTeamWon())) {
+        if (isValid(prediction.getTeamPredicted()) && isValid(resultDto.getTeamWon())
+                && prediction.getTeamPredicted().equals(resultDto.getTeamWon())) {
             totalPointsWonByUser += 5;
         }
-        if (prediction.getMostRunsScorerPredicted().equals(resultDto.getMostRunsScorer())) {
+        if (isValid(prediction.getMostRunsScorerPredicted()) && isValid(resultDto.getMostRunsScorer())
+                && prediction.getMostRunsScorerPredicted().equals(resultDto.getMostRunsScorer())) {
             totalPointsWonByUser += 3;
         }
-        if (prediction.getMostWicketsTakerPredicted().equals(resultDto.getMostWicketsTaker())) {
+        if (isValid(prediction.getMostWicketsTakerPredicted()) && isValid(resultDto.getMostWicketsTaker())
+                && prediction.getMostWicketsTakerPredicted().equals(resultDto.getMostWicketsTaker())) {
             totalPointsWonByUser += 3;
         }
-        if (prediction.getMomPredicted().equals(resultDto.getPlayerOfTheMatch())) {
+        if (isValid(prediction.getMomPredicted()) && isValid(resultDto.getPlayerOfTheMatch())
+                && prediction.getMomPredicted().equals(resultDto.getPlayerOfTheMatch())) {
             totalPointsWonByUser += 3;
         }
 
@@ -118,5 +124,9 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return totalPointsWonByUser;
+    }
+
+    private boolean isValid(String value) {
+        return value != null && !value.isEmpty() && !value.equalsIgnoreCase("NA") && !value.equalsIgnoreCase("N/A");
     }
 }
