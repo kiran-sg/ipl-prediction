@@ -1,17 +1,27 @@
 package com.ipl.prediction.iplprediction.controller;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
+import com.ipl.prediction.iplprediction.entity.IplMatch;
+import com.ipl.prediction.iplprediction.entity.IplPlayer;
+import com.ipl.prediction.iplprediction.entity.IplTeam;
+import com.ipl.prediction.iplprediction.repository.MatchRepository;
+import com.ipl.prediction.iplprediction.repository.PlayerRepository;
+import com.ipl.prediction.iplprediction.repository.TeamRepository;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
 import com.ipl.prediction.iplprediction.service.CricApiService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,28 +34,14 @@ public class AdminController {
     @Autowired
     private CricApiService cricApiService;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private MatchRepository matchRepository;
 
-    private static final java.util.Set<String> ALLOWED_TABLES = java.util.Set.of(
-            "ipl_users", "ipl_teams", "ipl_players", "ipl_matches", "ipl_predictions", "tournament_predictions"
-    );
+    @Autowired
+    private PlayerRepository playerRepository;
 
-    @PostMapping("/truncate")
-    @Transactional
-    public ResponseEntity<AdminResponse> truncateTable(@RequestBody Map<String, String> request) {
-        AdminResponse response = new AdminResponse();
-        String tableName = request.get("tableName");
-        if (tableName == null || !ALLOWED_TABLES.contains(tableName.toLowerCase())) {
-            response.setStatus(false);
-            response.setMessage("Invalid table name. Allowed: " + ALLOWED_TABLES);
-            return ResponseEntity.badRequest().body(response);
-        }
-        entityManager.createNativeQuery("TRUNCATE TABLE " + tableName + " CASCADE").executeUpdate();
-        response.setStatus(true);
-        response.setMessage("Table " + tableName + " truncated successfully");
-        return ResponseEntity.ok(response);
-    }
+    @Autowired
+    private TeamRepository teamRepository;
 
     @PostMapping("/sync/results")
     public ResponseEntity<Map<String, Object>> syncResults() {
@@ -82,5 +78,77 @@ public class AdminController {
             @RequestBody PredictionRequest request) {
         AdminResponse response = adminService.deletePredictions(request.getMatchIds());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/import")
+    @Transactional
+    public ResponseEntity<AdminResponse> importData(@RequestParam("file") MultipartFile file) {
+        AdminResponse response = new AdminResponse();
+        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+            int teamsCount = 0, playersCount = 0, matchesCount = 0;
+
+            Sheet teamsSheet = workbook.getSheet("Teams");
+            if (teamsSheet != null) {
+                List<IplTeam> teams = new ArrayList<>();
+                for (Row row : teamsSheet) {
+                    if (row.getRowNum() == 0) continue;
+                    IplTeam t = new IplTeam();
+                    t.setShortName(cellStr(row, 1));
+                    t.setTeamName(cellStr(row, 2));
+                    t.setLogoUrl(cellStr(row, 3));
+                    teams.add(t);
+                }
+                teamRepository.saveAll(teams);
+                teamsCount = teams.size();
+            }
+
+            Sheet playersSheet = workbook.getSheet("Players");
+            if (playersSheet != null) {
+                List<IplPlayer> players = new ArrayList<>();
+                for (Row row : playersSheet) {
+                    if (row.getRowNum() == 0) continue;
+                    IplPlayer p = new IplPlayer();
+                    p.setPlayerNo(cellStr(row, 1));
+                    p.setPlayerName(cellStr(row, 2));
+                    p.setCategory(cellStr(row, 3));
+                    p.setTeam(cellStr(row, 4));
+                    p.setImageUrl(cellStr(row, 5));
+                    players.add(p);
+                }
+                playerRepository.saveAll(players);
+                playersCount = players.size();
+            }
+
+            Sheet matchesSheet = workbook.getSheet("Matches");
+            if (matchesSheet != null) {
+                List<IplMatch> matches = new ArrayList<>();
+                for (Row row : matchesSheet) {
+                    if (row.getRowNum() == 0) continue;
+                    IplMatch m = new IplMatch();
+                    m.setMatchNo(cellStr(row, 1));
+                    m.setDateTime(cellStr(row, 2));
+                    m.setHome(cellStr(row, 3));
+                    m.setAway(cellStr(row, 4));
+                    matches.add(m);
+                }
+                matchRepository.saveAll(matches);
+                matchesCount = matches.size();
+            }
+
+            response.setStatus(true);
+            response.setMessage("Imported: " + teamsCount + " teams, " + playersCount + " players, " + matchesCount + " matches");
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setMessage("Import failed: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    private String cellStr(Row row, int col) {
+        Cell cell = row.getCell(col);
+        if (cell == null) return "";
+        cell.setCellType(CellType.STRING);
+        return cell.getStringCellValue().trim();
     }
 }
