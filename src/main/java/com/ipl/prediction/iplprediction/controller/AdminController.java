@@ -5,6 +5,9 @@ import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
 import com.ipl.prediction.iplprediction.service.CricApiService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,29 @@ public class AdminController {
 
     @Autowired
     private CricApiService cricApiService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private static final java.util.Set<String> ALLOWED_TABLES = java.util.Set.of(
+            "ipl_users", "ipl_teams", "ipl_players", "ipl_matches", "ipl_predictions", "tournament_predictions"
+    );
+
+    @PostMapping("/truncate")
+    @Transactional
+    public ResponseEntity<AdminResponse> truncateTable(@RequestBody Map<String, String> request) {
+        AdminResponse response = new AdminResponse();
+        String tableName = request.get("tableName");
+        if (tableName == null || !ALLOWED_TABLES.contains(tableName.toLowerCase())) {
+            response.setStatus(false);
+            response.setMessage("Invalid table name. Allowed: " + ALLOWED_TABLES);
+            return ResponseEntity.badRequest().body(response);
+        }
+        entityManager.createNativeQuery("TRUNCATE TABLE " + tableName + " CASCADE").executeUpdate();
+        response.setStatus(true);
+        response.setMessage("Table " + tableName + " truncated successfully");
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/sync/results")
     public ResponseEntity<Map<String, Object>> syncResults() {
