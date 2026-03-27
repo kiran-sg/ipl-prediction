@@ -25,8 +25,8 @@ public class ExcelService {
                 if (row.getRowNum() == 0) continue; // Skip header row
 
                 IplUserDto emp = new IplUserDto();
-                emp.setUserId(row.getCell(0).getStringCellValue());
-                emp.setName(row.getCell(1).getStringCellValue());
+                emp.setName(row.getCell(0).getStringCellValue());
+                emp.setUserId(row.getCell(1).getStringCellValue());
                 emp.setLocation(row.getCell(2).getStringCellValue());
 
                 employees.add(emp);

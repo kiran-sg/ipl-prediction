@@ -43,11 +43,15 @@ public class UserServiceImpl implements UserService {
     public void uploadData(List<IplUserDto> dtos) {
         List<IplUser> users = new ArrayList<>();
         dtos.forEach(dto -> {
-            IplUser user = new IplUser();
-            user.setUserId(dto.getUserId());
-            user.setName(dto.getName());
-            user.setLocation(dto.getLocation());
-            users.add(user);
+            if (userRepository.findByUserId(dto.getUserId()) == null) {
+                IplUser user = new IplUser();
+                user.setUserId(dto.getUserId());
+                user.setName(dto.getName());
+                user.setLocation(dto.getLocation());
+                user.setIsAdmin(false);
+                user.setSurgesRemaining(3);
+                users.add(user);
+            }
         });
         userRepository.saveAll(users);
     }
