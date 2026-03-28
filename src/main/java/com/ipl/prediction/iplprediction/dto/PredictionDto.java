@@ -24,6 +24,7 @@ public class PredictionDto {
     private String mostWicketsTakerPredicted;
     private LocalDateTime predictionTime;
     private String tossWon;
+    private String firstInnScore;
     private String teamWon;
     private String mom;
     private String mostRunsScorer;

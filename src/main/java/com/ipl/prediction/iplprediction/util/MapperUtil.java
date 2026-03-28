@@ -25,6 +25,12 @@ public class MapperUtil {
         predictionDto.setMostWicketsTakerPredicted(prediction.getMostWicketsTakerPredicted());
         predictionDto.setPoints(prediction.getPoints() == null ? 0 : prediction.getPoints());
         predictionDto.setSurgeUsed(prediction.getSurgeUsed() != null && prediction.getSurgeUsed());
+        predictionDto.setTossWon(prediction.getTossWon());
+        predictionDto.setFirstInnScore(prediction.getFirstInnScore());
+        predictionDto.setTeamWon(prediction.getTeamWon());
+        predictionDto.setMom(prediction.getMom());
+        predictionDto.setMostRunsScorer(prediction.getMostRunsScorer());
+        predictionDto.setMostWicketsTaker(prediction.getMostWicketsTaker());
         return predictionDto;
     }
 
