@@ -216,8 +216,6 @@ public class PredictionServiceImpl implements PredictionService {
 //                .filter(data -> data.getTotalPoints() != 0)
 //                .collect(Collectors.toList());
 
-        return leaderboard.stream()
-                .filter(data -> data.getTotalPoints() != 0 && data.getPosition() <= 5)
-                .collect(Collectors.toList());
+        return leaderboard;
     }
 }
