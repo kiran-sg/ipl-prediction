@@ -4,6 +4,8 @@ import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
 import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import com.ipl.prediction.iplprediction.entity.Prediction;
 import com.ipl.prediction.iplprediction.entity.IplUser;
+import com.ipl.prediction.iplprediction.entity.IplPlayer;
+import com.ipl.prediction.iplprediction.entity.IplTeam;
 import com.ipl.prediction.iplprediction.entity.TournamentPrediction;
 import com.ipl.prediction.iplprediction.entity.IplMatch;
 import com.ipl.prediction.iplprediction.repository.MatchRepository;
@@ -11,6 +13,8 @@ import com.ipl.prediction.iplprediction.repository.PredictionRepository;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.repository.TournamentPredictionRepository;
 import com.ipl.prediction.iplprediction.repository.UserRepository;
+import com.ipl.prediction.iplprediction.repository.PlayerRepository;
+import com.ipl.prediction.iplprediction.repository.TeamRepository;
 import com.ipl.prediction.iplprediction.response.PredictionResponse;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import com.ipl.prediction.iplprediction.util.MapperUtil;
@@ -133,27 +137,50 @@ public class PredictionServiceImpl implements PredictionService {
                 .toList();
     }
 
+    @Autowired
+    private PlayerRepository playerRepository;
+    @Autowired
+    private TeamRepository teamRepository;
+
     @Override
     public TournamentPredictionDto saveTournamentPrediction(
-            TournamentPredictionDto tournamentPredictionDto, String userId) {
-        IplUser user = userRepository.findByUserId(tournamentPredictionDto.getUserId());
+            TournamentPredictionDto dto, String userId) {
+        IplUser user = userRepository.findByUserId(dto.getUserId());
+
+        IplPlayer orangeCap = resolvePlayer(dto.getOrangeCapPredictedId());
+        IplPlayer purpleCap = resolvePlayer(dto.getPurpleCapPredictedId());
+        IplPlayer emergingPlayer = resolvePlayer(dto.getEmergingPlayerPredictedId());
+        IplTeam fairPlayTeam = resolveTeam(dto.getFairPlayTeamPredictedId());
+        IplPlayer mostFours = resolvePlayer(dto.getMostFoursPredictedId());
+        IplPlayer mostSixes = resolvePlayer(dto.getMostSixesPredictedId());
+        IplPlayer mostDotBalls = resolvePlayer(dto.getMostDotBallsPredictedId());
+        IplPlayer bestBowlingFig = resolvePlayer(dto.getBestBowlingFigPredictedId());
+        IplPlayer playerOfTournament = resolvePlayer(dto.getPlayerOfTournamentPredictedId());
+
         Optional<TournamentPrediction> opTournamentPrediction = tournamentPredictionRepository
                 .findByUser(user);
 
+        TournamentPrediction prediction;
         if (opTournamentPrediction.isPresent()) {
-            System.out.println("Updating existing tournament prediction for user: " + userId);
-            TournamentPrediction existingPrediction = opTournamentPrediction.get();
-            updateTournamentPrediction(existingPrediction, tournamentPredictionDto);
-            TournamentPrediction updatedPrediction = tournamentPredictionRepository.save(existingPrediction);
-            return tournamentPredictionToTournamentPredictionDto(updatedPrediction);
+            prediction = opTournamentPrediction.get();
         } else {
-            System.out.println("No existing tournament prediction found for the given user: " + user);
-            TournamentPrediction newPrediction = new TournamentPrediction();
-            updateTournamentPrediction(newPrediction, tournamentPredictionDto);
-            newPrediction.setUser(user);
-            TournamentPrediction savedPrediction = tournamentPredictionRepository.save(newPrediction);
-            return tournamentPredictionToTournamentPredictionDto(savedPrediction);
+            prediction = new TournamentPrediction();
+            prediction.setUser(user);
         }
+        updateTournamentPrediction(prediction, orangeCap, purpleCap, emergingPlayer,
+                fairPlayTeam, mostFours, mostSixes, mostDotBalls, bestBowlingFig, playerOfTournament);
+        TournamentPrediction saved = tournamentPredictionRepository.save(prediction);
+        return tournamentPredictionToTournamentPredictionDto(saved);
+    }
+
+    private IplPlayer resolvePlayer(Long id) {
+        return id == null ? null : playerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Player not found: " + id));
+    }
+
+    private IplTeam resolveTeam(Long id) {
+        return id == null ? null : teamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Team not found: " + id));
     }
 
     @Override

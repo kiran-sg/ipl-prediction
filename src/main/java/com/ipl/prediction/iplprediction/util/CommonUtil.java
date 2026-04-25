@@ -1,12 +1,23 @@
 package com.ipl.prediction.iplprediction.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class CommonUtil {
+
+    private static String tournamentPredictionCutoff;
+
+    @Value("${tournament.prediction.cutoff}")
+    public void setTournamentPredictionCutoff(String cutoff) {
+        tournamentPredictionCutoff = cutoff;
+    }
 
     public static boolean isPredictionAllowed(String matchDateTime) {
         LocalDateTime matchTime;
@@ -23,7 +34,8 @@ public class CommonUtil {
 
     public static boolean isTournamentPredictionAllowed() {
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        ZonedDateTime cutoffTime = ZonedDateTime.of(2025, 5, 23, 12, 0, 0, 0, ZoneId.of("Asia/Kolkata"));
+        LocalDateTime cutoffLocal = LocalDateTime.parse(tournamentPredictionCutoff);
+        ZonedDateTime cutoffTime = cutoffLocal.atZone(ZoneId.of("Asia/Kolkata"));
         return currentTime.isBefore(cutoffTime);
     }
 }

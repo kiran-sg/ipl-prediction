@@ -1,6 +1,7 @@
 package com.ipl.prediction.iplprediction.controller;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
+import com.ipl.prediction.iplprediction.dto.TournamentResultDto;
 import com.ipl.prediction.iplprediction.entity.IplMatch;
 import com.ipl.prediction.iplprediction.entity.IplPlayer;
 import com.ipl.prediction.iplprediction.entity.IplTeam;
@@ -77,6 +78,26 @@ public class AdminController {
     public ResponseEntity<AdminResponse> deletePredictions(
             @RequestBody PredictionRequest request) {
         AdminResponse response = adminService.deletePredictions(request.getMatchIds());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/tournament/result")
+    public ResponseEntity<AdminResponse> updateTournamentResults(
+            @RequestBody TournamentResultDto resultDto) {
+        AdminResponse response = adminService.updateTournamentResults(resultDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tournament/result")
+    public ResponseEntity<TournamentResultDto> getTournamentResult() {
+        return ResponseEntity.ok(adminService.getTournamentResult());
+    }
+
+    @GetMapping("/tournament/predictions")
+    public ResponseEntity<AdminResponse> getAllTournamentPredictions() {
+        AdminResponse response = new AdminResponse();
+        response.setTournamentPredictions(adminService.getAllTournamentPredictions());
+        response.setStatus(true);
         return ResponseEntity.ok(response);
     }
 

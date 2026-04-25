@@ -2,6 +2,8 @@ package com.ipl.prediction.iplprediction.service;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
+import com.ipl.prediction.iplprediction.dto.TournamentResultDto;
+import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 
 import java.util.List;
@@ -14,4 +16,10 @@ public interface AdminService {
     AdminResponse updateMatchResults(MatchResultDto resultDto);
 
     AdminResponse deletePredictions(List<String> matchId);
+
+    AdminResponse updateTournamentResults(TournamentResultDto resultDto);
+
+    TournamentResultDto getTournamentResult();
+
+    List<TournamentPredictionDto> getAllTournamentPredictions();
 }

@@ -15,42 +15,54 @@ public class TournamentPrediction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prediction_id")
-    private Long predictionId; // Primary key
+    private Long predictionId;
 
     @ManyToOne
-    @JoinColumn(name = "ipl_user_id", nullable = false) // Foreign key to IplUser
-    private IplUser user; // Many-to-one relationship with IplUser
+    @JoinColumn(name = "ipl_user_id", nullable = false)
+    private IplUser user;
 
-    @Column(name = "orange_cap_predicted")
-    private String orangeCapPredicted; // Predicted Orange Cap Winner
+    @ManyToOne
+    @JoinColumn(name = "orange_cap_predicted")
+    private IplPlayer orangeCapPredicted;
 
-    @Column(name = "purple_cap_predicted")
-    private String purpleCapPredicted; // Predicted Purple Cap Winner
+    @ManyToOne
+    @JoinColumn(name = "purple_cap_predicted")
+    private IplPlayer purpleCapPredicted;
 
-    @Column(name = "emerging_player_predicted")
-    private String emergingPlayerPredicted; // Predicted Emerging Player of the Season
+    @ManyToOne
+    @JoinColumn(name = "emerging_player_predicted")
+    private IplPlayer emergingPlayerPredicted;
 
-    @Column(name = "fair_play_team_predicted")
-    private String fairPlayTeamPredicted; // Predicted Fair Play Team of the Season
+    @ManyToOne
+    @JoinColumn(name = "fair_play_team_predicted")
+    private IplTeam fairPlayTeamPredicted;
 
-    @Column(name = "most_fours_predicted")
-    private String mostFoursPredicted; // Predicted player with most fours
+    @ManyToOne
+    @JoinColumn(name = "most_fours_predicted")
+    private IplPlayer mostFoursPredicted;
 
-    @Column(name = "most_sixes_predicted")
-    private String mostSixesPredicted; // Predicted player with most sixes
+    @ManyToOne
+    @JoinColumn(name = "most_sixes_predicted")
+    private IplPlayer mostSixesPredicted;
 
-    @Column(name = "most_dot_balls_predicted")
-    private String mostDotBallsPredicted; // Predicted player with most dot balls
+    @ManyToOne
+    @JoinColumn(name = "most_dot_balls_predicted")
+    private IplPlayer mostDotBallsPredicted;
 
-    @Column(name = "best_bowling_fig_predicted")
-    private String bestBowlingFigPredicted; // Predicted player with best bowling figures
+    @ManyToOne
+    @JoinColumn(name = "best_bowling_fig_predicted")
+    private IplPlayer bestBowlingFigPredicted;
+
+    @ManyToOne
+    @JoinColumn(name = "player_of_tournament_predicted")
+    private IplPlayer playerOfTournamentPredicted;
 
     @Column(name = "prediction_time")
-    private LocalDateTime predictionTime; // Timestamp of the prediction
+    private LocalDateTime predictionTime;
 
     @Column(name = "points")
-    private Integer points; // Points earned for the prediction
+    private Integer points;
 
     @Column(name = "result_updated_time")
-    private LocalDateTime resultUpdatedTime; //Result update time
+    private LocalDateTime resultUpdatedTime;
 }
