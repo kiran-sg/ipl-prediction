@@ -95,6 +95,19 @@ public class PredictionController {
             predictionResponse.setMessage("Season Prediction is closed. You can't predict now.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(predictionResponse);
         }
+        if (tournamentPredictionDto.getOrangeCapPredictedId() == null
+                && tournamentPredictionDto.getPurpleCapPredictedId() == null
+                && tournamentPredictionDto.getEmergingPlayerPredictedId() == null
+                && tournamentPredictionDto.getFairPlayTeamPredictedId() == null
+                && tournamentPredictionDto.getMostFoursPredictedId() == null
+                && tournamentPredictionDto.getMostSixesPredictedId() == null
+                && tournamentPredictionDto.getMostDotBallsPredictedId() == null
+                && tournamentPredictionDto.getBestBowlingFigPredictedId() == null
+                && tournamentPredictionDto.getPlayerOfTournamentPredictedId() == null) {
+            predictionResponse.setStatus(false);
+            predictionResponse.setMessage("At least one prediction is required.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(predictionResponse);
+        }
         if (tournamentPredictionDto.getUserId() == null) {
             predictionResponse.setStatus(false);
             predictionResponse.setInvalidUser(true);

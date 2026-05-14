@@ -12,6 +12,7 @@ import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
 import com.ipl.prediction.iplprediction.service.CricApiService;
+import static com.ipl.prediction.iplprediction.util.CommonUtil.isTournamentResultUpdateAllowed;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -84,6 +85,12 @@ public class AdminController {
     @PostMapping("/tournament/result")
     public ResponseEntity<AdminResponse> updateTournamentResults(
             @RequestBody TournamentResultDto resultDto) {
+        if (!isTournamentResultUpdateAllowed()) {
+            AdminResponse response = new AdminResponse();
+            response.setStatus(false);
+            response.setMessage("Tournament result update is not allowed until the tournament ends.");
+            return ResponseEntity.badRequest().body(response);
+        }
         AdminResponse response = adminService.updateTournamentResults(resultDto);
         return ResponseEntity.ok(response);
     }

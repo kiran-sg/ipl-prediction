@@ -13,10 +13,16 @@ import java.time.format.DateTimeFormatter;
 public class CommonUtil {
 
     private static String tournamentPredictionCutoff;
+    private static String tournamentResultAllowedAfter;
 
     @Value("${tournament.prediction.cutoff}")
     public void setTournamentPredictionCutoff(String cutoff) {
         tournamentPredictionCutoff = cutoff;
+    }
+
+    @Value("${tournament.result.allowed-after}")
+    public void setTournamentResultAllowedAfter(String allowedAfter) {
+        tournamentResultAllowedAfter = allowedAfter;
     }
 
     public static boolean isPredictionAllowed(String matchDateTime) {
@@ -37,5 +43,12 @@ public class CommonUtil {
         LocalDateTime cutoffLocal = LocalDateTime.parse(tournamentPredictionCutoff);
         ZonedDateTime cutoffTime = cutoffLocal.atZone(ZoneId.of("Asia/Kolkata"));
         return currentTime.isBefore(cutoffTime);
+    }
+
+    public static boolean isTournamentResultUpdateAllowed() {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+        LocalDateTime allowedAfterLocal = LocalDateTime.parse(tournamentResultAllowedAfter);
+        ZonedDateTime allowedAfterTime = allowedAfterLocal.atZone(ZoneId.of("Asia/Kolkata"));
+        return currentTime.isAfter(allowedAfterTime);
     }
 }

@@ -41,7 +41,6 @@ class TournamentPredictionTests {
         IplUser user = new IplUser();
         user.setUserId("user2");
         user.setName("Test User");
-        user.setPassword("");
         userRepository.save(user);
 
         IplPlayer p1 = new IplPlayer();
