@@ -3,11 +3,13 @@ package com.ipl.prediction.iplprediction.controller;
 import com.ipl.prediction.iplprediction.dto.LeaderboardDTO;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
+import com.ipl.prediction.iplprediction.dto.TournamentResultDto;
 import com.ipl.prediction.iplprediction.entity.IplMatch;
 import com.ipl.prediction.iplprediction.repository.MatchRepository;
 import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.response.PredictionResponse;
+import com.ipl.prediction.iplprediction.service.AdminService;
 import com.ipl.prediction.iplprediction.service.PredictionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class PredictionController {
     private PredictionService predictionService;
     @Autowired
     private MatchRepository matchRepository;
+    @Autowired
+    private AdminService adminService;
 
     @PostMapping
     public ResponseEntity<PredictionResponse> savePrediction(
@@ -129,6 +133,11 @@ public class PredictionController {
         response.setTournamentPrediction(predictionService.getTournamentPredictionByUser(user));
         response.setStatus(true);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tournament/result")
+    public ResponseEntity<TournamentResultDto> getTournamentResult() {
+        return ResponseEntity.ok(adminService.getTournamentResult());
     }
 
     @GetMapping("/leaderboard")
