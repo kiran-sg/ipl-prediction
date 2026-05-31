@@ -15,12 +15,12 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
 //            "WHERE u.location = ?1 " +
 //            "GROUP BY u.id " +
 //            "ORDER BY totalPoints DESC")
-    @Query("SELECT u, COALESCE(SUM(p.points), 0) as totalPoints " +
+    @Query("SELECT u, (COALESCE(SUM(p.points), 0) + COALESCE((SELECT SUM(tp.points) FROM TournamentPrediction tp WHERE tp.user.id = u.id), 0)) as totalPoints " +
             "FROM IplUser u " +
             "LEFT JOIN Prediction p ON u.id = p.user.id " +
             "WHERE u.location = ?1 " +
             "GROUP BY u.id " +
-            "ORDER BY COALESCE(SUM(p.points), 0) DESC")
+            "ORDER BY (COALESCE(SUM(p.points), 0) + COALESCE((SELECT SUM(tp.points) FROM TournamentPrediction tp WHERE tp.user.id = u.id), 0)) DESC")
     List<Object[]> getLeaderboardByLocation(String location);
 
     /**

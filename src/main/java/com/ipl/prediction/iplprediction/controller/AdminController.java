@@ -1,6 +1,7 @@
 package com.ipl.prediction.iplprediction.controller;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
+import com.ipl.prediction.iplprediction.dto.TournamentResultDto;
 import com.ipl.prediction.iplprediction.entity.IplMatch;
 import com.ipl.prediction.iplprediction.entity.IplPlayer;
 import com.ipl.prediction.iplprediction.entity.IplTeam;
@@ -11,6 +12,7 @@ import com.ipl.prediction.iplprediction.request.PredictionRequest;
 import com.ipl.prediction.iplprediction.response.AdminResponse;
 import com.ipl.prediction.iplprediction.service.AdminService;
 import com.ipl.prediction.iplprediction.service.CricApiService;
+import static com.ipl.prediction.iplprediction.util.CommonUtil.isTournamentResultUpdateAllowed;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -77,6 +79,32 @@ public class AdminController {
     public ResponseEntity<AdminResponse> deletePredictions(
             @RequestBody PredictionRequest request) {
         AdminResponse response = adminService.deletePredictions(request.getMatchIds());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/tournament/result")
+    public ResponseEntity<AdminResponse> updateTournamentResults(
+            @RequestBody TournamentResultDto resultDto) {
+        if (!isTournamentResultUpdateAllowed()) {
+            AdminResponse response = new AdminResponse();
+            response.setStatus(false);
+            response.setMessage("Tournament result update is not allowed until the tournament ends.");
+            return ResponseEntity.badRequest().body(response);
+        }
+        AdminResponse response = adminService.updateTournamentResults(resultDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tournament/result")
+    public ResponseEntity<TournamentResultDto> getTournamentResult() {
+        return ResponseEntity.ok(adminService.getTournamentResult());
+    }
+
+    @GetMapping("/tournament/predictions")
+    public ResponseEntity<AdminResponse> getAllTournamentPredictions() {
+        AdminResponse response = new AdminResponse();
+        response.setTournamentPredictions(adminService.getAllTournamentPredictions());
+        response.setStatus(true);
         return ResponseEntity.ok(response);
     }
 

@@ -1,12 +1,29 @@
 package com.ipl.prediction.iplprediction.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class CommonUtil {
+
+    private static String tournamentPredictionCutoff;
+    private static String tournamentResultAllowedAfter;
+
+    @Value("${tournament.prediction.cutoff}")
+    public void setTournamentPredictionCutoff(String cutoff) {
+        tournamentPredictionCutoff = cutoff;
+    }
+
+    @Value("${tournament.result.allowed-after}")
+    public void setTournamentResultAllowedAfter(String allowedAfter) {
+        tournamentResultAllowedAfter = allowedAfter;
+    }
 
     public static boolean isPredictionAllowed(String matchDateTime) {
         LocalDateTime matchTime;
@@ -23,7 +40,15 @@ public class CommonUtil {
 
     public static boolean isTournamentPredictionAllowed() {
         ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-        ZonedDateTime cutoffTime = ZonedDateTime.of(2025, 5, 23, 12, 0, 0, 0, ZoneId.of("Asia/Kolkata"));
+        LocalDateTime cutoffLocal = LocalDateTime.parse(tournamentPredictionCutoff);
+        ZonedDateTime cutoffTime = cutoffLocal.atZone(ZoneId.of("Asia/Kolkata"));
         return currentTime.isBefore(cutoffTime);
+    }
+
+    public static boolean isTournamentResultUpdateAllowed() {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+        LocalDateTime allowedAfterLocal = LocalDateTime.parse(tournamentResultAllowedAfter);
+        ZonedDateTime allowedAfterTime = allowedAfterLocal.atZone(ZoneId.of("Asia/Kolkata"));
+        return currentTime.isAfter(allowedAfterTime);
     }
 }

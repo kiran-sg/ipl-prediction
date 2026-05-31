@@ -2,6 +2,7 @@ package com.ipl.prediction.iplprediction.response;
 
 import com.ipl.prediction.iplprediction.dto.MatchResultDto;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
+import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,4 +15,5 @@ public class AdminResponse {
     private boolean status;
     private List<PredictionDto> predictions;
     private MatchResultDto matchResult;
+    private List<TournamentPredictionDto> tournamentPredictions;
 }

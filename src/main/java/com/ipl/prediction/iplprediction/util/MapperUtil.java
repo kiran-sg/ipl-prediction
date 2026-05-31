@@ -3,9 +3,7 @@ package com.ipl.prediction.iplprediction.util;
 import com.ipl.prediction.iplprediction.dto.IplUserDto;
 import com.ipl.prediction.iplprediction.dto.PredictionDto;
 import com.ipl.prediction.iplprediction.dto.TournamentPredictionDto;
-import com.ipl.prediction.iplprediction.entity.IplUser;
-import com.ipl.prediction.iplprediction.entity.Prediction;
-import com.ipl.prediction.iplprediction.entity.TournamentPrediction;
+import com.ipl.prediction.iplprediction.entity.*;
 
 import java.sql.Timestamp;
 
@@ -45,35 +43,41 @@ public class MapperUtil {
     }
 
     public static TournamentPredictionDto tournamentPredictionToTournamentPredictionDto(
-            TournamentPrediction tournamentPrediction) {
-        TournamentPredictionDto tournamentPredictionDto = new TournamentPredictionDto();
-        tournamentPredictionDto.setPredictionId(tournamentPrediction.getPredictionId());
-        tournamentPredictionDto.setUserId(tournamentPrediction.getUser().getUserId());
-        tournamentPredictionDto.setUser(iplUserToIplUserDto(tournamentPrediction.getUser()));
-        tournamentPredictionDto.setOrangeCapPredicted(tournamentPrediction.getOrangeCapPredicted());
-        tournamentPredictionDto.setPurpleCapPredicted(tournamentPrediction.getPurpleCapPredicted());
-        tournamentPredictionDto.setEmergingPlayerPredicted(tournamentPrediction.getEmergingPlayerPredicted());
-        tournamentPredictionDto.setFairPlayTeamPredicted(tournamentPrediction.getFairPlayTeamPredicted());
-        tournamentPredictionDto.setMostFoursPredicted(tournamentPrediction.getMostFoursPredicted());
-        tournamentPredictionDto.setMostSixesPredicted(tournamentPrediction.getMostSixesPredicted());
-        tournamentPredictionDto.setMostDotBallsPredicted(tournamentPrediction.getMostDotBallsPredicted());
-        tournamentPredictionDto.setBestBowlingFigPredicted(tournamentPrediction.getBestBowlingFigPredicted());
-        tournamentPredictionDto.setPredictionTime(tournamentPrediction.getPredictionTime());
-        tournamentPredictionDto.setPoints(tournamentPrediction.getPoints() == null ? 0 : tournamentPrediction.getPoints());
-        return tournamentPredictionDto;
+            TournamentPrediction tp) {
+        TournamentPredictionDto dto = new TournamentPredictionDto();
+        dto.setPredictionId(tp.getPredictionId());
+        dto.setUserId(tp.getUser().getUserId());
+        dto.setUser(iplUserToIplUserDto(tp.getUser()));
+        dto.setOrangeCapPredictedId(tp.getOrangeCapPredicted() != null ? tp.getOrangeCapPredicted().getId() : null);
+        dto.setPurpleCapPredictedId(tp.getPurpleCapPredicted() != null ? tp.getPurpleCapPredicted().getId() : null);
+        dto.setEmergingPlayerPredictedId(tp.getEmergingPlayerPredicted() != null ? tp.getEmergingPlayerPredicted().getId() : null);
+        dto.setFairPlayTeamPredictedId(tp.getFairPlayTeamPredicted() != null ? tp.getFairPlayTeamPredicted().getId() : null);
+        dto.setMostFoursPredictedId(tp.getMostFoursPredicted() != null ? tp.getMostFoursPredicted().getId() : null);
+        dto.setMostSixesPredictedId(tp.getMostSixesPredicted() != null ? tp.getMostSixesPredicted().getId() : null);
+        dto.setMostDotBallsPredictedId(tp.getMostDotBallsPredicted() != null ? tp.getMostDotBallsPredicted().getId() : null);
+        dto.setBestBowlingFigPredictedId(tp.getBestBowlingFigPredicted() != null ? tp.getBestBowlingFigPredicted().getId() : null);
+        dto.setPlayerOfTournamentPredictedId(tp.getPlayerOfTournamentPredicted() != null ? tp.getPlayerOfTournamentPredicted().getId() : null);
+        dto.setPredictionTime(tp.getPredictionTime());
+        dto.setPoints(tp.getPoints() == null ? 0 : tp.getPoints());
+        return dto;
     }
 
-    public static void updateTournamentPrediction(TournamentPrediction tournamentPrediction,
-                                                  TournamentPredictionDto tournamentPredictionDto) {
-        tournamentPrediction.setOrangeCapPredicted(tournamentPredictionDto.getOrangeCapPredicted());
-        tournamentPrediction.setPurpleCapPredicted(tournamentPredictionDto.getPurpleCapPredicted());
-        tournamentPrediction.setEmergingPlayerPredicted(tournamentPredictionDto.getEmergingPlayerPredicted());
-        tournamentPrediction.setFairPlayTeamPredicted(tournamentPredictionDto.getFairPlayTeamPredicted());
-        tournamentPrediction.setMostFoursPredicted(tournamentPredictionDto.getMostFoursPredicted());
-        tournamentPrediction.setMostSixesPredicted(tournamentPredictionDto.getMostSixesPredicted());
-        tournamentPrediction.setMostDotBallsPredicted(tournamentPredictionDto.getMostDotBallsPredicted());
-        tournamentPrediction.setBestBowlingFigPredicted(tournamentPredictionDto.getBestBowlingFigPredicted());
-        tournamentPrediction.setPredictionTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+    public static void updateTournamentPrediction(TournamentPrediction tp,
+                                                  IplPlayer orangeCap, IplPlayer purpleCap,
+                                                  IplPlayer emergingPlayer, IplTeam fairPlayTeam,
+                                                  IplPlayer mostFours, IplPlayer mostSixes,
+                                                  IplPlayer mostDotBalls, IplPlayer bestBowlingFig,
+                                                  IplPlayer playerOfTournament) {
+        tp.setOrangeCapPredicted(orangeCap);
+        tp.setPurpleCapPredicted(purpleCap);
+        tp.setEmergingPlayerPredicted(emergingPlayer);
+        tp.setFairPlayTeamPredicted(fairPlayTeam);
+        tp.setMostFoursPredicted(mostFours);
+        tp.setMostSixesPredicted(mostSixes);
+        tp.setMostDotBallsPredicted(mostDotBalls);
+        tp.setBestBowlingFigPredicted(bestBowlingFig);
+        tp.setPlayerOfTournamentPredicted(playerOfTournament);
+        tp.setPredictionTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
     }
 
     private static IplUserDto iplUserToIplUserDto(IplUser iplUser) {
